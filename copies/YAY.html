@@ -1,3 +1,4 @@
+
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -11,7 +12,7 @@
             <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
             <link href="./css/style.css" rel="stylesheet">
             <link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-            <link href='https://fonts.googleapis.com/css?family=Anaheim' rel='stylesheet' type='text/css'>
+            <!-- <link href='https://fonts.googleapis.com/css?family=Anaheim' rel='stylesheet' type='text/css'> -->
 
             <style>
                 @font-face
@@ -31,10 +32,8 @@
             <script src="./bootstrap/js/jquery-1.9.1.min.js"></script>
             <script src="./bootstrap/js/bootstrap-tooltip.js"></script>
             <script src="./bootstrap/js/bootstrap-popover.js"></script>
-
             <script src="./js/two.min.js"></script>
             <script src="./js/d3.custom.js"></script>
-              <script src="./js/popover.js"></script>
             
             <!-- <script src="./js/three.js"></script> -->
             <!-- <script src="./js/gistscript.js"></script> -->
@@ -47,19 +46,19 @@
                     <!-- see style.css for blur -->
                     <svg id="moonv2" width="1200">
                         <defs>
-                          <!--   <pattern id="img1" patternUnits="userSpaceOnUse" width="300" height="400">
+                            <pattern id="img1" patternUnits="userSpaceOnUse" width="300" height="400">
                                 <image xlink:href="./img/moonimgmap.jpg" x="0" y="0" width="800" height="400"/>
-                            </pattern> -->
+                            </pattern>
 
                              <!-- for the d3js earth -->
                             <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#020659;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#020873;stop-opacity:1" />
+                                <stop offset="0%" style="stop-color:#1B3D93;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#295DE0;stop-opacity:1" />
                             </linearGradient>
                             <filter id="glow">
                                 <feColorMatrix type="matrix"
                                     values=
-                                    "0 0 0 0.9   0
+                                    "0 0 0 0   0
                                      0 0 0 0.9 0 
                                      0 0 0 0.9 0 
                                      0 0 0 1   0"/>
@@ -150,11 +149,8 @@
                             .call(zoom)
                             .on("dblclick.zoom", null);
 
-
-                            
-
                     // Create a list of random stars and add them to outerspace
-                    // var starList = createStars(300);
+                    var starList = createStars(300);
                             
                     // var stars = moonsvg.append("g")
                     //     .selectAll("g")
@@ -177,10 +173,8 @@
                         .attr("filter", "url(#glow)")
                         .attr("fill", "url(#gradBlue)");
 
-
                     //Add all of the countries to the globe
                     var g = moonsvg.append("g"),
-                        locations,
                         features;
 
                     //loading json for countries
@@ -193,8 +187,8 @@
                     });
 
                     //Add all of the lunaites to the globe
-                    // var locations = moonsvg.append("g")
-                    //         .attr('id', 'locations');
+                    var locations = moonsvg.append("g")
+                            .attr('id', 'locations');
 
                     //loading csv meteorite data to convert to json
                     d3.csv('./data/meteorites-updated_05-14-13.csv', function(d){
@@ -202,51 +196,12 @@
                         myData = JSON.stringify(d);
                         var json = JSON.parse(myData);
                         var geojson = geoJSON(json);
+                        
                         locations = g.selectAll(".location").data(geojson.features);
 
                         locations.enter().append("path")
                             .attr("class", "location")
-                            .attr("d", function(d){ return path(circle.clip(d)); })
-                            .tooltip(function(d, i) {
-                                var r, svg;
-                                r = +d3.select(this).attr('r');
-                                svg = d3.select(document.createElement("svg")).attr("height", 50);
-                                g = svg.append("g");
-                                g.append("rect").attr("width", r * 10).attr("height", 10);
-                                g.append("text").text("mass: " + d.properties.mass).attr("dy", "10");
-                                return {
-                                  type: "popover",
-                                  title: d.properties.name,
-                                  content: svg,
-                                  detection: "shape",
-                                  placement: "fixed",
-                                  gravity: "right",
-                                  position: [d.features, d.features],
-                                  displacement: [r + 2, -50],
-                                  mousemove: false
-                                };
-                            });
-                    });
-                            
-                            // .on("click", function(d){
-                            //     // alert(d.properties.name);
-                            //     // $("#historypopup").popover({html:true});
-                            // });
-                            
-
-                        // console.log(geojson.features);
-                        // g.selectAll(".location").on("click", function()
-                        //  { 
-                        //     //alert(d3.select(this).name);
-                        //     var name = geojson.features.properties;
-                        //     // console.log(d);
-                        //     alert(name); 
-                        //  })
-
-                        // locations.enter().append("path")
-                        //     .attr("class", "location")
-                        //     .attr("d", function(d){ return path(circle.clip(d)); });
-                        //console.log(geojson.features[0].properties.name);
+                            .attr("d", function(d){ return path(circle.clip(d)); });
 
 
                         // var pointsToPlot = locations.selectAll('locations')
@@ -256,7 +211,7 @@
                         //         .attr('class', 'features')
                                 // .attr('d', function(d){ return path(circle.clip(d)); });
 
-                        
+                        });
 
 
                     function geoJSON(data){
@@ -277,14 +232,12 @@
                                             'coordinates' : [data[i].reclat, data[i].reclong] //[x,y]
                                         },
                                         'properties': {
-                                            'name' : data[i]['name'],
-                                            'mass' : data[i]['mass']
+                                            'name' : data[i]['name']
                                         }
                                     });
                                 }
                             }
                         }; //end FOR i
-                        console.log(_geoJSON);
                         return _geoJSON;
 
                     }; //end function geoJSON(data)
@@ -346,7 +299,60 @@
                         return [Math.random() * 360 - 180, Math.random() * 180 - 90];
                     }
 
-                    
+                    // d3 lunaites from the top of the browser
+                    // first set of lunaites
+                    var circlesFirst = moonsvg.selectAll("TEST")
+                        .data(d3dataset)
+                        .enter()
+                        .append("svg:circle")
+                            .attr("id", "TEST")
+                            // .attr("filter", "url(#glow)");
+
+                    circlesFirst.attr("cx", function(d){
+                        return Math.floor(Math.random() * (1050-800 +1)) + 800;
+                    })
+                        .attr("cy", -10)
+                        .attr("r", 1)
+                        .attr("fill", "white")
+                           
+                        //TODO: delays for each lunaite, animated bezier curves
+                        .transition()
+                            .delay(function(d, i){
+                                return Math.floor(Math.random() * 100000);
+                            })
+                            .duration(4000)
+                            .attr("r", 5)
+                            .attr("cx", 150)
+                            .attr("cy", 120)
+                            .remove();
+
+                    //second set of lunaites        
+                    var circlesSecond = moonsvg.selectAll("TEST2")
+                        .data(d3dataset)
+                        .enter()
+                        .append("svg:circle")
+                            .attr("id", "TEST2")
+                            // .attr("filter", "url(#glow)");
+
+                    circlesSecond.attr("cx", function(d){
+                        return Math.floor(Math.random() * (150-120 +1)) + 120;
+                    })
+                        .attr("cy", 120)
+                        .attr("r", 5)
+                        .attr("fill", "white")
+
+                        //TODO: delays for each lunaite, animated bezier curves
+                        .transition()
+                            .delay(function(d, i){
+                                return Math.floor(Math.random() * 200000);
+                            })
+                            .duration(5000)
+                            .attr("r", 1)
+                            .attr("cx", function(d){
+                                return Math.floor(Math.random() * (750-500 +1)) + 500;
+                            })
+                            .attr("cy", 500)
+                            .remove();
                 }//end
             </script>
             
